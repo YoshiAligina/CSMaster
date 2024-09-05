@@ -1,0 +1,36 @@
+---
+title: "hw5"
+output: html_notebook
+---
+
+
+```{r}
+library(faraway)
+data(pima)
+head(pima,25)
+```
+
+
+```{r}
+glucose_q1 <- quantile(pima$glucose, 0.25)
+glucose_q4 <- quantile(pima$glucose, 0.75)
+
+pima$quartile_group <- NA
+pima$quartile_group[pima$glucose <= glucose_q1] <- "Q1"
+pima$quartile_group[pima$glucose >= glucose_q4] <- "Q4"
+```
+
+```{r}
+inQ1 <- pima$glucose <= glucose_q1
+inQ4 <- pima$glucose >= glucose_q4
+
+mean_Q1 <- tapply(pima$diabetes[inQ1], pima$glucose[inQ1], mean)
+mean_Q4 <- tapply(pima$diabetes[inQ4], pima$glucose[inQ4], mean)
+
+```
+
+```{r}
+cat("Mean of diabetes variable for glucose in Q1): ", mean_Q1, "\n")
+cat("Mean of diabetes variable for glucose in Q4): ", mean_Q4, "\n")
+```
+

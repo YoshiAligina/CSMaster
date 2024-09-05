@@ -1,0 +1,44 @@
+---
+title: "Hw 7"
+output: html_notebook
+---
+
+
+```{r}
+favourO <- 30
+favourY <- 40
+totO <- 50
+totY <- 50
+
+res <- prop.test(c(favourO, favourY), c(totO, totY),conf.level = 0.95)
+print(res)
+```
+```{r}
+# The p-value was calculated above as 0.04953, as value is below .05, we have enough to say the null hypothesis is true.
+```
+
+```{r}
+set.seed(23415) 
+combined <- c(rep(1, favourO), rep(0, totO - favourO), rep(1, favourY), rep(0, totY - favourY))
+obs_diff <- abs(favourY / totY - favourO / totO)
+```
+
+
+```{r}
+perms <- 1000
+
+perms_diff <- replicate(perms, {
+
+  shuffled <- sample(combined)
+  new_old <- shuffled[1:totO]
+  new_young <- shuffled[(totO + 1):(totO + totY)]
+  
+  abs(sum(new_young) / totY - sum(new_old) / totO)
+})
+
+p_val <- mean(perms_diff >= obs_diff)
+print(p_val)
+
+#Since the p-value is 0.043, it is below the typical value of 0.05, so we can say the null hypothesis is true.
+```
+

@@ -1,0 +1,20 @@
+---
+title: "Homework 9"
+output: html_notebook
+---
+
+```{r}
+es_prop <- c(.05,.30,.40,.20,.05)
+ppl_counts <- c(6,29,38,22,5)
+tot <- 100
+
+expected <- es_prop * tot
+
+res <- chisq.test(x = ppl_counts, p= es_prop)
+
+res$p.value
+
+# We got a p-value result of .97. From this we can reject the null hypothesis.
+```
+
+

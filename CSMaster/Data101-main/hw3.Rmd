@@ -1,0 +1,8 @@
+---
+title: "hw3"
+output: html_notebook
+---
+
+```{r}
+plot(cars)
+```

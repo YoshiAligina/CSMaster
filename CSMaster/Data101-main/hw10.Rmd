@@ -1,0 +1,44 @@
+---
+title: "HW 9"
+output: html_notebook
+---
+
+```{r}
+polio_table <- matrix(c(200688,24,33, 201087,27,115),nrow = 2, byrow = TRUE)
+colnames(polio_table) <- c("Did not contract Polio", "Contracted NP Polio", "Contracted P Polio")
+rownames(polio_table) <- c("Vaccinated", "Placebo")
+```
+
+
+```{r}
+cTest <- chisq.test(polio_table)
+p_chi <-cTest$p.value
+#The chi-squared test !!! 
+```
+
+```{r}
+pTest <- function(polio_table, num = 2000) {
+  pdiff <- (polio_table[1, 3] / sum(polio_table[1, ])) - 
+                        (polio_table[2, 3] / sum(polio_table[2, ]))
+    pdiff2 <- numeric(num)
+  
+  for (i in 1:num) {
+    shuffled <- sample(c(rep(1, polio_table[1, 3]), rep(2, polio_table[2, 3])), 
+                       sum(polio_table[, 3]), replace = FALSE)
+        cShuffle <- table(shuffled)
+        pdiff2[i] <- (cShuffle[1] / sum(polio_table[1, ])) - 
+                     (cShuffle[2] / sum(polio_table[2, ]))
+  }
+  p_val <- mean(abs(pdiff2) >= abs(pdiff))
+  return(p_val)
+}
+```
+
+```{r}
+p_val <- pTest(polio_table, 2000)
+
+print(polio_table)
+cat("Chi-square", p_chi, "\n")
+cat("Permutation", p_val, "\n")
+```
+

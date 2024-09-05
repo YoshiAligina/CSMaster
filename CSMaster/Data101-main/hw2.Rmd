@@ -1,0 +1,40 @@
+---
+title: "hw2"
+output: html_notebook
+---
+
+
+```{r}
+# This loads the first 25 results of the pima database.
+library(faraway)
+data(pima)
+head(pima,25)
+```
+```{r}
+#This is women who tested negative for diabetes.
+hs2 <- subset(pima,test ==0)
+head(hs2)
+```
+```{r}
+#This is a few one way tables.
+#This is a test table
+table(pima$test)
+#This is an age table
+print("\n")
+table(pima$age)
+#This is an insulin table
+print("\n")
+table(pima$insulin)
+```
+```{r}
+#This is a two way table for age and BMI
+table(pima$age,pima$bmi)
+```
+```{r}
+#This is the oneway table for the subset for how many women are pregnant.
+table(hs2$pregnant)
+```
+```{r}
+#This is a two way table from our subset with pregnancy results and BMI.
+table(hs2$pregnant, hs2$bmi)
+```

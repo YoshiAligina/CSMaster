@@ -1,0 +1,48 @@
+---
+title: "R Homework 6"
+output: html_notebook
+---
+
+```{r}
+set.seed(13245)
+
+sam1 <- runif(9, 0, 1)
+sam2 <- runif(9, 0, 1.3)
+
+par(mfrow = c(1,2))
+
+```
+
+```{r}
+qqnorm(sam1, main = "Plot for Sample 1")
+qqline(sam1)
+qqnorm(sam2, main = "Plot for Sample 2")
+qqline(sam2)
+```
+
+```{r}
+t_tester <- t.test(sam1,sam2, var.equal = TRUE)
+t_tester$p.value
+```
+
+```{r}
+combine <- c(sam1,sam2)
+observed <-abs(mean(sam1)-mean(sam2))
+perms <- numeric(1000)
+```
+```{r}
+for (i in 1:1000) {
+  
+  shuffled_samples <- sample(combine)
+  perm_sample1 <- shuffled_samples[1:9]
+  perm_sample2 <- shuffled_samples[10:18]
+  perms[i] <- abs(mean(perm_sample1) - mean(perm_sample2))
+}
+# Had to utilise CGPT for this portion as I could not for the life of me figure out how to do it.
+```
+
+```{r}
+p_val <- mean(perms >= observed)
+print(p_val)
+```
+

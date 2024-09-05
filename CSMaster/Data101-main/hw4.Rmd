@@ -1,0 +1,23 @@
+---
+title: "hw4"
+output: html_notebook
+---
+
+
+```{r}
+library(faraway)
+data(pima)
+head(pima,25)
+```
+```{r}
+dataf0 <- pima[pima$test == 0, ]
+mean0 <- mean(dataf0$diabetes)
+dataf1 <- pima[pima$test == 1, ]
+mean1 <- mean(dataf1$diabetes)
+```
+
+```{r}
+cat("Mean of test =0: ", mean0, "\n")
+cat("Mean of test =1: ", mean1, "\n")
+```
+

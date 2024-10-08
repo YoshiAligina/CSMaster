@@ -1,0 +1,61 @@
+---
+title: "Yoshita Aligina HW 2"
+output: html_notebook
+---
+1. Is it appropriate to use linear regression models to address each question in the following? Why
+and why not?
+(a) We COULD use linear regression models here in the case when we try to predict this using biological sex as a binary variable. However, this may not work if sex and age at death do not have a linear relationship.
+(b) I do not think it would be appropriate at all because the idea is people either do or don't have diabetes, there isn't an in between. 
+(c) We couldn't because we are expecting continuous results, which we would not receive in this sitution. 
+(d) We could not because we are given three categoricaa values for the quality of the wine. 
+
+
+```{r}
+library(foreign)
+kidiq=read.dta("kidiq.dta")
+
+```
+
+2. 
+(a) In Code
+(b) In Code
+(c) The slope indicates the expected increase in  score for children whose moms completed high school.
+(d) The intercept represents the average kid score for children whose moms did not complete high school.
+```{r}
+#(a)
+boxplot(kidiq$kid_score ~ kidiq$mom_hs, 
+        xlab = "Mom HS (0 = No, 1 = Yes)", 
+        ylab = "Kid Score", 
+        main = "Boxplot of Kid Score by Mom HS")
+#(b)
+lm_model <- lm(kid_score ~ mom_hs, data = kidiq)
+summary(lm_model)$coefficients
+
+```
+
+3.Split the data into two subgroups, corresponding to mom hs=0 and mom hs=1 respectively. For
+each subgroup, use the Kid’s Score (kid score) and Mom’s Score (mom iq) as the response and
+predictor respectively, and do the following:
+(a) In Code
+(b) In Code
+(c) For both groups, the slope represents the expected increase in the kid's score for how much higher the mother's IQ is, it is proportional. 
+```{r}
+#(a & b)
+lm_0 <- lm(kid_score ~ mom_iq, data = subset_0)
+lm_1 <- lm(kid_score ~ mom_iq, data = subset_1)
+
+summary(lm_0)$coefficients
+summary(lm_1)$coefficients
+
+plot(subset_0$mom_iq, subset_0$kid_score, 
+     xlab = "Mom IQ", ylab = "Kid Score", 
+     main = "Mom HS = 0")
+abline(lm_0, col = "blue")
+
+plot(subset_1$mom_iq, subset_1$kid_score, 
+     xlab = "Mom IQ", ylab = "Kid Score", 
+     main = "Mom HS = 1")
+abline(lm_1, col = "blue")
+
+```
+

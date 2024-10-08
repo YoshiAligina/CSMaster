@@ -1,0 +1,39 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+n <- nrow(prostate)
+p <- ncol(prostate) - 1  # Subtracting 1 to exclude the response variable
+
+print(paste("n =", n))
+print(paste("p =", p))
+```
+
+```{r}
+X <- model.matrix(~ lcavol + lweight + age + lbph + svi + lcp + gleason + pgg45, data = prostate)
+print(head(X, 3))
+```
+
+```{r}
+y <- prostate$lpsa
+beta_hat <- solve(t(X) %*% X) %*% t(X) %*% y
+print(beta_hat)
+```
+
+```{r}
+model <- lm(lpsa ~ lcavol + lweight + age + lbph + svi + lcp + gleason + pgg45, data = prostate)
+print(coef(model))
+```
+
+```{r}
+y_hat <- X %*% beta_hat
+SSE <- sum((y - y_hat)^2)
+print(paste("Sum of squared vertical distances:", SSE))
+```
+

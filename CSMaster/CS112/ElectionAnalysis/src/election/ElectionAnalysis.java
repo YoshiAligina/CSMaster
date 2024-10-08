@@ -244,6 +244,38 @@ public class ElectionAnalysis {
      */
     public int totalVotes(int year, String stateName) {
       YearNode yearNode = years;
+      while (yearNode != null && yearNode.getYear() != year) 
+      {
+          yearNode = yearNode.getNext(); // This will loop through the years list until it finds the year or reaches the end.
+      }
+      
+      if (yearNode == null) 
+      {
+          return 0; // This will return 0 if the year is not found.
+      }
+      StateNode stateNode = yearNode.getStates();
+      if (stateNode != null)
+       {
+          do { // This will loop through the states list until it finds the state or reaches the end.
+              if (stateNode.getStateName().equals(stateName)) 
+              {
+                  break;
+              }
+              stateNode = stateNode.getNext();
+          } while (stateNode != yearNode.getStates()); // This will loop through the states list until it finds the state or reaches the end.
+          
+          if (stateNode != null && stateNode.getStateName().equals(stateName)) // This will return the total votes for the state if the state is found.
+          {
+              int totalVotes = 0;
+              ElectionNode election = stateNode.getElections();
+              while (election != null)  // This will loop through the elections list until it reaches the end.
+              {
+                  totalVotes += election.getVotes(); // This will add the votes from the election to the total votes.
+                  election = election.getNext(); // This will move to the next election.
+              }
+              return totalVotes; // This will return the total votes for the state.
+          }
+      }
       return 0; // This will return 0 if the state is not found.
   }
 
@@ -259,7 +291,42 @@ public class ElectionAnalysis {
      */
     public int averageVotes(int year, String stateName) {
       YearNode yearNode = years;
-      return 0;
+      while (yearNode != null && yearNode.getYear() != year) 
+      {
+          yearNode = yearNode.getNext(); // This will loop through the years list until it finds the year or reaches the end.
+      }
+      if (yearNode == null) 
+      {
+          return 0; // This will return 0 if the year is not found.
+      }
+      StateNode stateNode = yearNode.getStates();
+      if (stateNode != null)
+       {
+          do
+           {
+              if (stateNode.getStateName().equals(stateName)) 
+              {
+                  break; // This will break the loop if the state is found.
+              }
+              stateNode = stateNode.getNext();
+          } 
+          while (stateNode != yearNode.getStates());
+          
+          if (stateNode != null && stateNode.getStateName().equals(stateName)) // This will return the average votes for the state if the state is found.
+          {
+              int totalVotes = 0;
+              int electionCount = 0;
+              ElectionNode election = stateNode.getElections(); // This will get the elections list for the state.
+              while (election != null) // This will loop through the elections list until it reaches the end.
+              {
+                  totalVotes += election.getVotes();
+                  electionCount++;
+                  election = election.getNext(); // This will move to the next election.
+              } // This will add the votes from the election to the total votes and increment the election count.
+              return electionCount > 0 ? totalVotes / electionCount : 0; // This will return the average votes for the state.
+          }
+      }
+      return 0; 
     }
 
     /*

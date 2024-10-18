@@ -22,7 +22,7 @@ public class ElectionNode {
 
     private ElectionNode next;
 
-    public ElectionNode() {
+    public ElectionNode(int raceID2, boolean senate2, int officeID2) {
         this.candidates = new ArrayList<String>();
         this.votes = new ArrayList<Integer>();
         this.parties = new ArrayList<String>();
@@ -133,9 +133,5 @@ public class ElectionNode {
         this.next = next;
     }
 
-    public String findCandidateParty(String candidateName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findCandidateParty'");
-    }
     
 }

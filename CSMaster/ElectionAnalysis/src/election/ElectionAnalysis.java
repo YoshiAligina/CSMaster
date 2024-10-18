@@ -48,21 +48,24 @@ public class ElectionAnalysis {
       while (StdIn.hasNextLine()){   // This will read the file line by line.
           String[] split = StdIn.readLine().split(","); // This will split the line by commas.
           int year = Integer.parseInt(split[4]); // This will get the year from the line and set it to year. 
-          
-          if (years == null) {
+          if (years == null) { //empty
               years = new YearNode(year); // This will insert a new YearNode with the year if years is null.
-          } 
-          else {
-              YearNode current = years;
-              while (current.getNext() != null && current.getYear() != year){  // This will loop through the years list until it finds the year or reaches the end.
-                  current = current.getNext();
-              }
-              if (current.getYear() != year) { // This will insert a new YearNode at the end of the years list with the corresponding year if the year is not found.
-                  current.setNext(new YearNode(year)); 
+          }     
+          else 
+          {
+            YearNode current = years; // start at head
+            while (current.getNext() != null && current.getYear() != year) {  // This will loop through the years list until it finds the year or reaches the end.
+                current = current.getNext();
+            }
+            if (current.getYear() != year) { // if year not found, add to tail
+                YearNode newYear = new YearNode(year); // This will insert a new YearNode at the end of the years list with the corresponding year.
+                newYear.setNext(current.getNext());
+                current.setNext(newYear); 
                 }
-          }
-      }
-  }
+            }
+        }
+    }
+  
 
     /*
      * Read through the lines in the given elections CSV file
@@ -83,60 +86,39 @@ public class ElectionAnalysis {
      * @param file String filename to parse, in csv format.
      */
     public void readStates(String file) {
-        StdIn.setFile(file);
-    
-        while (StdIn.hasNextLine()) {
+        StdIn.setFile(file); // open file
+        while (StdIn.hasNextLine()) { // go thru file
             String[] split = StdIn.readLine().split(",");
-            int year = Integer.parseInt(split[4]);
-            String state = split[1];
-    
-            YearNode yearNode = years;
-            while (yearNode != null && yearNode.getYear() != year) {
+            int year = Integer.parseInt(split[4]); // get year
+            String state = split[1]; // get state
+            YearNode yearNode = years; // make in method copy of years
+            while (yearNode != null && yearNode.getYear() != year) { // if year exists, find it
                 yearNode = yearNode.getNext();
             }
-    
-            if (yearNode != null) {
-                StateNode current = yearNode.getStates();
+            if (yearNode != null) { // if year exists
+                StateNode current = yearNode.getStates(); // get states
                 boolean found = false;
-    
-                if (current != null) {
-                    do {
-                        if (current.getStateName().equals(state)) {
-                            found = true;
-                            break;
-                        }
-                        current = current.getNext();
-                    } while (current != yearNode.getStates());
-                } else {
-                    StateNode newState = new StateNode(state, null);
+                StateNode newState = new StateNode(state, null);
+                if (yearNode.getStates() == null) { // if empty list
                     newState.setNext(newState);
                     yearNode.setStates(newState);
-                    current = newState;
-                    found = true;
                 }
-    
-                if (!found) {
-                    StateNode newState = new StateNode(state, null);
-                    if (yearNode.getStates() == null) { 
-                        newState.setNext(newState); // Circular link to itself
-                        yearNode.setStates(newState);
-                    } else {
-                        StateNode head = yearNode.getStates();
-                        StateNode tail = head;
-    
-                        // Traverse to find the tail (which links back to head)
-                        while (tail.getNext() != head) {
-                            tail = tail.getNext();
-                        }
-    
-                        tail.setNext(newState); // Insert the new node after the tail
-                        newState.setNext(head); // Link new node back to the head
+                do {
+                    if (current.getStateName().equals(state)) { // if state found
+                        found = true;
+                        break;// break out of loop
                     }
+                    current = current.getNext();
+                } while (current != yearNode.getStates()); 
+    
+                if (!found) { // if states not found
+                    newState.setNext(yearNode.getStates().getNext());
+                    yearNode.getStates().setNext(newState);
+                    yearNode.setStates(newState); // add to end of list
+                    } 
                 }
             }
         }
-    }
-    
     /*
      * Read in Elections from a given CSV file, and insert them in the
      * correct states list, inside the correct year node.
@@ -171,21 +153,21 @@ public class ElectionAnalysis {
             }
             if (yearNode != null) {
                 StateNode stateNode = yearNode.getStates();
+                StateNode stateNodeTemp = stateNode;
                 do {
-                    if (stateNode.getStateName().equals(state)) break;
-                    stateNode = stateNode.getNext();
-                } while (stateNode != yearNode.getStates());
+                    if (stateNodeTemp.getStateName().equals(state)) break;
+                    stateNodeTemp = stateNodeTemp.getNext();
+                } while (stateNodeTemp != stateNode);
                 if (stateNode != null) {
                     ElectionNode election = stateNode.getElections();
                     if (election == null) {
                         ElectionNode newElection = new ElectionNode(raceID, senate, officeID, new int[0], new String[0], -1, null);
-                        newElection.setRaceID(raceID);
-                        newElection.setoOfficeID(officeID);
-                        newElection.setSenate(senate);
-                        newElection.addCandidate(canName, votes, party, winner);
-                        stateNode.setElections(newElection);
+                        election = newElection;
+                        stateNode.setElections(election);
+                        election.addCandidate(canName, votes, party, winner);
+
                     } 
-                    boolean found = false;
+                     boolean found = false;
                     while (election != null) {
                         if (election.getRaceID() == raceID) {
                             if (!election.isCandidate(canName)) {
@@ -193,7 +175,7 @@ public class ElectionAnalysis {
                             } else {
                                 election.modifyCandidate(canName, votes, party);
                             }
-                            found = true;
+                           // found = true;
                             break;
                         }
                         election = election.getNext();
@@ -240,7 +222,7 @@ public class ElectionAnalysis {
         int first = totalVotes(secondYear, state);
         return last - first;
     }
-
+// For total votes and average votes be sure to consider situations in which there are no elections in a state in a given year.
     /*
      * Given a state name, find the total number of votes cast
      * in all elections in that state in the given year and return that number
@@ -262,8 +244,8 @@ public class ElectionAnalysis {
             if (currentYear.getYear() == year) {
                 break;
             }
-        currentYear = currentYear.getNext();
-    }
+            currentYear = currentYear.getNext();
+        }
         // If the year is not found, return 0
         if (currentYear == null) {
             return 0;
@@ -272,17 +254,17 @@ public class ElectionAnalysis {
         // Traverse the StateNode circular linked list to find the specified state
         if (currentState != null) {
             do {
-                if (currentState.getStateName().equals(stateName)) {
+                if (currentState.getStateName().equals(stateName)) { // If the state is found
                     break;
                 }
                 currentState = currentState.getNext();
-            } while (currentState != currentYear.getStates());
+            } while (currentState != currentYear.getStates()); // Continue until back to the start of the circular state list
         } 
         // If the state is not found, return 0
         if (currentState == null) {
             return 0;
         }
-        ElectionNode currentElection = currentState.getElections();
+        ElectionNode currentElection = currentState.getElections(); // Get the head of the elections list
         int totalVotes = 0;
         while (currentElection != null) {
             totalVotes += currentElection.getVotes();
@@ -353,24 +335,28 @@ public class ElectionAnalysis {
      */
     public String candidatesParty(String candidateName) {
         String latestParty = null;
+        int latestYear = 0;
         YearNode yearNode = years; // Start with the first year node
-        while (yearNode != null) {
+        do { 
             StateNode stateNode = yearNode.getStates(); // Get the states for the current year
             if (stateNode != null) {
-                StateNode head = stateNode; // Keep track of the start of the state list
-                do {
+                //StateNode head = stateNode; // Keep track of the start of the state list
+                 do { 
                     ElectionNode election = stateNode.getElections(); // Get elections in the current state
                     while (election != null) {
                         if (election.isCandidate(candidateName)) { // Check if the candidate exists in the election
-                            latestParty = election.getParty(candidateName); // Update party to the most recent one found
+                            if (yearNode.getYear() > latestYear) { // If the year is more recent than the latest year found
+                                latestParty = election.getParty(candidateName); // Update party to the most recent one found
+                                latestYear = yearNode.getYear(); // Update year to the most recent one found
+                            }
                         }
                         election = election.getNext(); // Move to the next election
                     }
                     stateNode = stateNode.getNext(); // Move to the next state
-                } while (stateNode != head); // Continue until back to the start of the circular state list
+                } while (stateNode != yearNode.getStates()); // Continue until the end of the list
             }
             yearNode = yearNode.getNext(); // Move to the next year
-        }
+        } while (yearNode != years); // Continue until the end of the list
         return latestParty != null ? latestParty : "Not found"; // Return the latest party, or "Not found"
     }
     
